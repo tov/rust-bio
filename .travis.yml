@@ -1,5 +1,7 @@
 language: rust
 
+cache: cargo
+
 sudo: false
 
 # Dependencies of kcov, used for cargo-travis
@@ -15,11 +17,10 @@ addons:
       - kalakris-cmake
 
 before_script:
-  - |
-      cargo install cargo-travis &&
-      export PATH=$HOME/.cargo/bin:$PATH
-#- pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
-#  - pip install git+https://github.com/johanneskoester/travis-cargo.git --user && export PATH=$HOME/.local/bin:$PATH
+  - export PATH=$HOME/.cargo/bin:$PATH
+  - cargo install cargo-travis
+  - which rustfmt || cargo install rustfmt
+
 
 matrix:
   include:
@@ -31,9 +32,9 @@ matrix:
     - rust: beta
 
 script:
-  - |
-      cargo build &&
-      cargo test
+  - cargo fmt -- --write-mode=diff
+  - cargo build
+  - cargo test
 
 after_success:
   - cargo coveralls
